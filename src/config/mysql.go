@@ -2,16 +2,20 @@ package config
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/pressly/goose/v3"
 )
 
 const connMaxLifetime = time.Minute * 3
 
-var MySQLConfig *mysql.Config
+type MySQL struct {
+	DB *sql.DB
+}
 
 func getMySQLConfig(cfg *Config) *mysql.Config {
 	addr := fmt.Sprintf(
@@ -20,18 +24,17 @@ func getMySQLConfig(cfg *Config) *mysql.Config {
 		cfg.Getenv("MYSQL_PORT", "3306"),
 	)
 
-	MySQLConfig = &mysql.Config{
-		User:   cfg.Getenv("MYSQL_USER", ""),
-		Passwd: cfg.Getenv("MYSQL_PASSWORD", ""),
-		Net:    "tcp",
-		Addr:   addr,
-		DBName: cfg.Getenv("MYSQL_DBNAME", ""),
+	return &mysql.Config{
+		User:      cfg.Getenv("MYSQL_USER", ""),
+		Passwd:    cfg.Getenv("MYSQL_PASSWORD", ""),
+		Net:       "tcp",
+		Addr:      addr,
+		DBName:    cfg.Getenv("MYSQL_DBNAME", ""),
+		ParseTime: true,
 	}
-
-	return MySQLConfig
 }
 
-func NewMySQLDatabase(cfg *Config) *sql.DB {
+func NewMySQLDatabase(cfg *Config) *MySQL {
 	db, err := sql.Open("mysql", getMySQLConfig(cfg).FormatDSN())
 	if err != nil {
 		panic(err)
@@ -40,14 +43,22 @@ func NewMySQLDatabase(cfg *Config) *sql.DB {
 	db.SetConnMaxLifetime(connMaxLifetime)
 
 	var version string
-	err2 := db.QueryRow("SELECT VERSION()").Scan(&version)
-
-	if err2 != nil {
-		log.Fatal(err2)
+	err = db.QueryRow("SELECT VERSION()").Scan(&version)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	fmt.Println(version)
-	fmt.Println("oe")
+	return &MySQL{DB: db}
+}
 
-	return db
+func (db *MySQL) RunMigration(migrationFs embed.FS) {
+	goose.SetBaseFS(migrationFs)
+
+	if err := goose.SetDialect("mysql"); err != nil {
+		panic(err)
+	}
+
+	if err := goose.Up(db.DB, "migrations"); err != nil {
+		panic(err)
+	}
 }

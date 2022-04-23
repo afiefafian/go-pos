@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"embed"
 	"fmt"
 	"log"
 
@@ -11,18 +13,36 @@ import (
 	"github.com/afiefafian/go-pos/src/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/pressly/goose/v3"
 )
+
+//go:embed migrations/*.sql
+var migrationFs embed.FS
+
+func runMigration(db *sql.DB) {
+	goose.SetBaseFS(migrationFs)
+
+	if err := goose.SetDialect("mysql"); err != nil {
+		panic(err)
+	}
+
+	if err := goose.Up(db, "migrations"); err != nil {
+		panic(err)
+	}
+}
 
 func main() {
 	cfg := config.Load()
 
-	db := config.NewMySQLDatabase(cfg)
-	if db != nil {
-		defer db.Close()
+	mysql := config.NewMySQLDatabase(cfg)
+	if mysql.DB != nil {
+		defer mysql.DB.Close()
 	}
 
+	mysql.RunMigration(migrationFs)
+
 	// Setup Repository
-	cashierRepository := repository.NewCashierRepository(db)
+	cashierRepository := repository.NewCashierRepository(mysql.DB)
 
 	// Setup Service
 	cashierService := service.NewCashierService(cashierRepository)
