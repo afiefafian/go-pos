@@ -1,6 +1,6 @@
 package model
 
-type PaginationParams struct {
+type PaginationQuery struct {
 	Limit int8
 	Skip  int8
 }
@@ -8,7 +8,8 @@ type PaginationParams struct {
 type BaseResponse struct {
 	Success bool        `json:"success"`
 	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Data    interface{} `json:"data,omitempty"`
+	Error   interface{} `json:"error,omitempty"`
 }
 
 type PaginationResponse struct {

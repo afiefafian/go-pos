@@ -1,5 +1,6 @@
 # Builder image
 FROM golang:1.18.1-alpine3.15 as builder
+RUN apk add git
 RUN mkdir /build
 ADD . /build
 WORKDIR /build
