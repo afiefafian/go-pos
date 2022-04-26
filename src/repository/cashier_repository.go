@@ -18,7 +18,7 @@ func NewCashierRepository(db *sql.DB) *CashierRepository {
 
 func (r *CashierRepository) FindAll(params *model.PaginationQuery) ([]entity.Cashier, error) {
 	rows, err := r.db.Query(
-		"SELECT * FROM cashiers LIMIT ? OFFSET ?",
+		"SELECT id, name, passcode, created_at, updated_at FROM cashiers LIMIT ? OFFSET ?",
 		params.Limit,
 		params.Skip,
 	)
@@ -86,7 +86,7 @@ func (r *CashierRepository) GetByID(id int64) (*entity.Cashier, error) {
 
 func (r *CashierRepository) Create(cashier entity.Cashier) (int64, error) {
 	result, err := r.db.Exec(
-		"INSERT INTO cashiers(name, passcode) VALUES (?, ?)",
+		"INSERT INTO cashiers (name, passcode) VALUES (?, ?)",
 		cashier.Name,
 		cashier.Passcode,
 	)
@@ -98,9 +98,8 @@ func (r *CashierRepository) Create(cashier entity.Cashier) (int64, error) {
 
 func (r *CashierRepository) UpdateByID(cashier entity.Cashier) error {
 	_, err := r.db.Exec(
-		"UPDATE cashiers SET name = ? , passcode = ? WHERE id = ?",
+		"UPDATE cashiers SET name = ? WHERE id = ?",
 		cashier.Name,
-		cashier.Passcode,
 		cashier.ID,
 	)
 	if err != nil {

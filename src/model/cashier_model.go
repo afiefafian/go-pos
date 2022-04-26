@@ -8,9 +8,8 @@ type CreateCashierRequest struct {
 }
 
 type UpdateCashierRequest struct {
-	ID       int64
-	Name     string `json:"name" validate:"required,min=1,max=50"`
-	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
+	ID   int64
+	Name string `json:"name" validate:"min=0,max=50"`
 }
 
 type CashierLoginRequest struct {

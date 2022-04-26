@@ -1,38 +1,107 @@
 package rest
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"strconv"
+
+	"github.com/afiefafian/go-pos/src/exception"
+	"github.com/afiefafian/go-pos/src/helper"
+	"github.com/afiefafian/go-pos/src/middleware"
+	"github.com/afiefafian/go-pos/src/model"
+	"github.com/afiefafian/go-pos/src/service"
+	"github.com/gofiber/fiber/v2"
+)
 
 type PaymentController struct {
+	paymentService *service.PaymentService
 }
 
-func NewPaymentController() *PaymentController {
-	return &PaymentController{}
+func NewPaymentController(paymentService *service.PaymentService) *PaymentController {
+	return &PaymentController{paymentService}
 }
 
 func (c *PaymentController) Route(app *fiber.App) {
-	app.Get("payments", c.findAll)
-	app.Get("payments/:id", c.findByID)
-	app.Post("payments", c.create)
-	app.Put("payments/:id", c.updateByID)
-	app.Delete("payments/:id", c.deleteByID)
+	route := app.Group("/payments")
+
+	route.Get("/", middleware.Protected(), c.findAll)
+	route.Get("/:id", middleware.Protected(), c.findByID)
+	route.Post("/", c.create)
+	route.Put("/:id", c.updateByID)
+	route.Delete("/:id", c.deleteByID)
 }
 
 func (c *PaymentController) findAll(ctx *fiber.Ctx) error {
-	return nil
+	query := helper.NewPaginationQueryFromCtx(ctx)
+	payments, pagination, err := c.paymentService.FindAll(query)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, map[string]interface{}{
+		"payments": payments,
+		"meta":     pagination,
+	}, "")
 }
 
 func (c *PaymentController) findByID(ctx *fiber.Ctx) error {
-	return nil
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Payment"))
+	}
+
+	var response *model.GetPaymentResponse
+	response, err = c.paymentService.GetByID(id)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, response, "")
 }
 
 func (c *PaymentController) create(ctx *fiber.Ctx) error {
-	return nil
+	var request model.CreatePaymentRequest
+	if err := ctx.BodyParser(&request); err != nil {
+		panic(err)
+	}
+
+	response, err := c.paymentService.Create(request)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, response, "")
 }
 
 func (c *PaymentController) updateByID(ctx *fiber.Ctx) error {
-	return nil
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Payment"))
+	}
+
+	var request model.UpdatePaymentRequest
+	if err := ctx.BodyParser(&request); err != nil {
+		panic(err)
+	}
+
+	request.ID = id
+
+	err = c.paymentService.UpdateByID(request)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, nil, "")
 }
 
 func (c *PaymentController) deleteByID(ctx *fiber.Ctx) error {
-	return nil
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Payment"))
+	}
+
+	err = c.paymentService.DeleteByID(id)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, nil, "")
 }

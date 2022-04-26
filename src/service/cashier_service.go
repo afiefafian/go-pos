@@ -97,9 +97,8 @@ func (s *CashierService) UpdateByID(request model.UpdateCashierRequest) error {
 	}
 
 	cashier := entity.Cashier{
-		ID:       request.ID,
-		Name:     request.Name,
-		Passcode: request.Passcode,
+		ID:   request.ID,
+		Name: request.Name,
 	}
 
 	if err := s.CashierRepository.UpdateByID(cashier); err != nil {

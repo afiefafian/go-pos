@@ -18,7 +18,7 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 
 func (r *CategoryRepository) FindAll(params *model.PaginationQuery) ([]entity.Category, error) {
 	rows, err := r.db.Query(
-		"SELECT * FROM categories LIMIT ? OFFSET ?",
+		"SELECT id, name, created_at, updated_at FROM categories LIMIT ? OFFSET ?",
 		params.Limit,
 		params.Skip,
 	)
@@ -84,7 +84,7 @@ func (r *CategoryRepository) GetByID(id int64) (*entity.Category, error) {
 
 func (r *CategoryRepository) Create(category entity.Category) (int64, error) {
 	result, err := r.db.Exec(
-		"INSERT INTO categories(name) VALUES (?)",
+		"INSERT INTO categories (name) VALUES (?)",
 		category.Name,
 	)
 	if err != nil {
