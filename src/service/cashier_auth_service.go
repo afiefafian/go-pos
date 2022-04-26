@@ -19,8 +19,8 @@ func NewCashierAuthService(cashierAuthRepository *repository.CashierRepository) 
 	}
 }
 
-func (r *CashierAuthService) GetPasscode(id int64) (*model.CashierPasscodeRespose, error) {
-	cashier, err := r.CashierRepository.GetByID(id)
+func (s *CashierAuthService) GetPasscode(id int64) (*model.CashierPasscodeRespose, error) {
+	cashier, err := s.CashierRepository.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +29,8 @@ func (r *CashierAuthService) GetPasscode(id int64) (*model.CashierPasscodeRespos
 	}, nil
 }
 
-func (r *CashierAuthService) Authenticate(request model.CashierLoginRequest) (*model.CashierLoginResponse, error) {
-	cashier, err := r.CashierRepository.GetByID(request.ID)
+func (s *CashierAuthService) Authenticate(request model.CashierLoginRequest) (*model.CashierLoginResponse, error) {
+	cashier, err := s.CashierRepository.GetByID(request.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +56,8 @@ func (r *CashierAuthService) Authenticate(request model.CashierLoginRequest) (*m
 	}, nil
 }
 
-func (r *CashierAuthService) Logout(request model.CashierLogoutRequest) error {
-	cashier, err := r.CashierRepository.GetByID(request.ID)
+func (s *CashierAuthService) Logout(request model.CashierLogoutRequest) error {
+	cashier, err := s.CashierRepository.GetByID(request.ID)
 	if err != nil {
 		return err
 	}

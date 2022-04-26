@@ -17,16 +17,16 @@ func NewCashierService(cashierRepository *repository.CashierRepository) *Cashier
 	return &CashierService{CashierRepository: cashierRepository}
 }
 
-func (r *CashierService) FindAll(params *model.PaginationQuery) ([]model.GetCashierResponse, *model.PaginationResponse, error) {
+func (s *CashierService) FindAll(params *model.PaginationQuery) ([]model.GetCashierResponse, *model.PaginationResponse, error) {
 	// Get cashiers data
-	cashiers, err := r.CashierRepository.FindAll(params)
+	cashiers, err := s.CashierRepository.FindAll(params)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	// Get total cashiers
 	var count int
-	count, err = r.CashierRepository.Count()
+	count, err = s.CashierRepository.Count()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -49,8 +49,8 @@ func (r *CashierService) FindAll(params *model.PaginationQuery) ([]model.GetCash
 	return cashiersResponse, pagination, nil
 }
 
-func (r *CashierService) GetByID(id int64) (*model.GetCashierResponse, error) {
-	cashier, err := r.CashierRepository.GetByID(id)
+func (s *CashierService) GetByID(id int64) (*model.GetCashierResponse, error) {
+	cashier, err := s.CashierRepository.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (r *CashierService) GetByID(id int64) (*model.GetCashierResponse, error) {
 	}, nil
 }
 
-func (r *CashierService) Create(request model.CreateCashierRequest) (*model.CreateCashierResponse, error) {
+func (s *CashierService) Create(request model.CreateCashierRequest) (*model.CreateCashierResponse, error) {
 	if err := helper.ValidateStruct(request); err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (r *CashierService) Create(request model.CreateCashierRequest) (*model.Crea
 		UpdatedAt: currentTime,
 	}
 
-	id, err := r.CashierRepository.Create(cashier)
+	id, err := s.CashierRepository.Create(cashier)
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +87,8 @@ func (r *CashierService) Create(request model.CreateCashierRequest) (*model.Crea
 	}, nil
 }
 
-func (r *CashierService) UpdateByID(request model.UpdateCashierRequest) error {
-	if _, err := r.CashierRepository.GetByID(request.ID); err != nil {
+func (s *CashierService) UpdateByID(request model.UpdateCashierRequest) error {
+	if _, err := s.CashierRepository.GetByID(request.ID); err != nil {
 		return err
 	}
 
@@ -102,19 +102,19 @@ func (r *CashierService) UpdateByID(request model.UpdateCashierRequest) error {
 		Passcode: request.Passcode,
 	}
 
-	if err := r.CashierRepository.UpdateByID(cashier); err != nil {
+	if err := s.CashierRepository.UpdateByID(cashier); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *CashierService) DeleteByID(id int64) error {
-	if _, err := r.CashierRepository.GetByID(id); err != nil {
+func (s *CashierService) DeleteByID(id int64) error {
+	if _, err := s.CashierRepository.GetByID(id); err != nil {
 		return err
 	}
 
-	if err := r.CashierRepository.DeleteByID(id); err != nil {
+	if err := s.CashierRepository.DeleteByID(id); err != nil {
 		return err
 	}
 	return nil

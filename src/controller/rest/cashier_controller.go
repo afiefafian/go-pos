@@ -27,7 +27,6 @@ func NewCashierController(
 
 func (c *CashierController) Route(app *fiber.App) {
 	route := app.Group("cashiers")
-
 	route.Get("/", c.findAll)
 	route.Get("/:id", c.findByID)
 	route.Post("/", c.create)
