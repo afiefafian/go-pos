@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -12,12 +11,14 @@ import (
 )
 
 const connMaxLifetime = time.Minute * 3
+const maxOpenConnections = 20
+const maxIdleConnections = 20
 
 type MySQL struct {
 	DB *sql.DB
 }
 
-func getMySQLConfig(cfg *Config) *mysql.Config {
+func config(cfg *Config) *mysql.Config {
 	addr := fmt.Sprintf(
 		"%s:%s",
 		cfg.Getenv("MYSQL_HOST", ""),
@@ -35,17 +36,17 @@ func getMySQLConfig(cfg *Config) *mysql.Config {
 }
 
 func NewMySQLDatabase(cfg *Config) *MySQL {
-	db, err := sql.Open("mysql", getMySQLConfig(cfg).FormatDSN())
+	db, err := sql.Open("mysql", config(cfg).FormatDSN())
 	if err != nil {
 		panic(err)
 	}
 
 	db.SetConnMaxLifetime(connMaxLifetime)
+	db.SetMaxOpenConns(maxOpenConnections)
+	db.SetMaxIdleConns(maxIdleConnections)
 
-	var version string
-	err = db.QueryRow("SELECT VERSION()").Scan(&version)
-	if err != nil {
-		log.Fatal(err)
+	if err = db.Ping(); err != nil {
+		panic(err)
 	}
 
 	return &MySQL{DB: db}

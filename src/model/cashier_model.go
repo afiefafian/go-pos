@@ -1,22 +1,33 @@
 package model
 
+import "time"
+
 type CreateCashierRequest struct {
-	Name     string `json:"name"`
-	Passcode string `json:"passcode"`
+	Name     string `json:"name" validate:"required,min=1,max=50"`
+	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
 }
 
-type GetCashierResponse CreateCashierRequest
+type UpdateCashierRequest struct {
+	ID       int64
+	Name     string `json:"name" validate:"required,min=1,max=50"`
+	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
+}
+
+type GetCashierResponse struct {
+	ID   int64  `json:"cashierId"`
+	Name string `json:"name"`
+}
 
 type CreateCashierResponse struct {
-	ID        string `json:"cashierId"`
-	Name      string `json:"name"`
-	Passcode  string `json:"passcode"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	ID        int64     `json:"cashierId"`
+	Name      string    `json:"name"`
+	Passcode  string    `json:"passcode"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type CashierLoginRequest struct {
-	Passcode string `json:"passcode"`
+	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
 }
 
 type CashierLogoutRequest CashierLoginRequest

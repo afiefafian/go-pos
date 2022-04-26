@@ -1,8 +1,8 @@
 package model
 
 type PaginationQuery struct {
-	Limit int8
-	Skip  int8
+	Limit int
+	Skip  int
 }
 
 type BaseResponse struct {
@@ -13,7 +13,16 @@ type BaseResponse struct {
 }
 
 type PaginationResponse struct {
-	Total int8 `json:"total"`
-	Limit int8 `json:"limit"`
-	Skip  int8 `json:"skip"`
+	Total int `json:"total"`
+	Limit int `json:"limit"`
+	Skip  int `json:"skip"`
+}
+
+type ValidationError struct {
+	FailedField string `json:"failedField"`
+	Tag         string `json:"tag"`
+	Value       string `json:"value"`
+}
+
+type EmptyObject struct {
 }

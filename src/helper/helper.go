@@ -1,17 +1,35 @@
 package helper
 
 import (
-	"log"
+	"strconv"
 
-	"golang.org/x/crypto/bcrypt"
+	"github.com/afiefafian/go-pos/src/model"
+	"github.com/gofiber/fiber/v2"
 )
 
-func HashAndSalt(pwd string) string {
-	//salt := viper.GetString(`salt`)
-	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.MinCost)
-	if err != nil {
-		log.Println(err)
+// Pagination default config
+const defaultPaginationLimit = 10
+const defaultPaginationSkip = 0
+
+func NewPaginationQueryFromCtx(ctx *fiber.Ctx) *model.PaginationQuery {
+	var (
+		limit int
+		skip  int
+	)
+
+	limitStr := ctx.Query("limit")
+	skipStr := ctx.Query("skip")
+
+	if limitStr != "" {
+		limit, _ = strconv.Atoi(limitStr)
 	}
 
-	return string(hash)
+	if skipStr != "" {
+		skip, _ = strconv.Atoi(skipStr)
+	}
+
+	return &model.PaginationQuery{
+		Limit: limit,
+		Skip:  skip,
+	}
 }

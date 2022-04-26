@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Cashier struct {
-	ID        int
+	ID        int64
 	Name      string
 	Passcode  string
 	CreatedAt time.Time

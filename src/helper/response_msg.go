@@ -6,6 +6,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+const MsgSuccess = "Success"
+const MsgErrValidation = "Validation Error"
+
 func MsgErrEntityNotFound(entity string) string {
 	return fmt.Sprintf("%s Not Found", entity)
 }
