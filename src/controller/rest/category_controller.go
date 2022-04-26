@@ -24,7 +24,7 @@ func (c *CategoryController) Route(app *fiber.App) {
 
 	route.Get("/", middleware.Protected(), c.findAll)
 	route.Get("/:id", middleware.Protected(), c.findByID)
-	route.Post("/", middleware.Protected(), c.create)
+	route.Post("/", c.create)
 	route.Put("/:id", middleware.Protected(), c.updateByID)
 	route.Delete("/:id", middleware.Protected(), c.deleteByID)
 }

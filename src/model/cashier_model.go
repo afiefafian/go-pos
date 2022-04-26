@@ -13,6 +13,13 @@ type UpdateCashierRequest struct {
 	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
 }
 
+type CashierLoginRequest struct {
+	ID       int64
+	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
+}
+
+type CashierLogoutRequest CashierLoginRequest
+
 type GetCashierResponse struct {
 	ID   int64  `json:"cashierId"`
 	Name string `json:"name"`
@@ -26,12 +33,6 @@ type CreateCashierResponse struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-type CashierLoginRequest struct {
-	ID       int64
-	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
-}
-
-type CashierLogoutRequest CashierLoginRequest
 type CashierPasscodeRespose CashierLoginRequest
 
 type CashierLoginResponse struct {

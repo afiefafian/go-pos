@@ -13,8 +13,8 @@ const defaultPaginationSkip = 0
 
 func NewPaginationQueryFromCtx(ctx *fiber.Ctx) *model.PaginationQuery {
 	var (
-		limit int
-		skip  int
+		limit int = defaultPaginationLimit
+		skip  int = defaultPaginationSkip
 	)
 
 	limitStr := ctx.Query("limit")
