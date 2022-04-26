@@ -40,7 +40,7 @@ func (s *CashierAuthService) Authenticate(request model.CashierLoginRequest) (*m
 	}
 
 	if cashier.Passcode != request.Passcode {
-		return nil, exception.Unauthorized("")
+		return nil, exception.Unauthorized(helper.MsgPasscodeNotMatch)
 	}
 
 	// Generate token
@@ -67,7 +67,7 @@ func (s *CashierAuthService) Logout(request model.CashierLogoutRequest) error {
 	}
 
 	if cashier.Passcode != request.Passcode {
-		return exception.Unauthorized("")
+		return exception.Unauthorized(helper.MsgPasscodeNotMatch)
 	}
 
 	return nil

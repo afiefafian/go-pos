@@ -3,11 +3,9 @@ package helper
 import (
 	"time"
 
+	"github.com/afiefafian/go-pos/src/config"
 	"github.com/golang-jwt/jwt/v4"
 )
-
-// Warning: Hardcoded
-const secret = "1@4235235235"
 
 func GenerateJWToken(userID string) (string, error) {
 	// Declare the expiration time of the token
@@ -20,5 +18,5 @@ func GenerateJWToken(userID string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(secret))
+	return token.SignedString([]byte(config.SECRET))
 }

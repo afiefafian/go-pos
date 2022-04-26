@@ -20,6 +20,7 @@ require (
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/gofiber/jwt/v2 v2.2.7
 	github.com/joho/godotenv v1.4.0
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/pressly/goose/v3 v3.5.3

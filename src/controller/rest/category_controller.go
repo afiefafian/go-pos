@@ -5,6 +5,7 @@ import (
 
 	"github.com/afiefafian/go-pos/src/exception"
 	"github.com/afiefafian/go-pos/src/helper"
+	"github.com/afiefafian/go-pos/src/middleware"
 	"github.com/afiefafian/go-pos/src/model"
 	"github.com/afiefafian/go-pos/src/service"
 	"github.com/gofiber/fiber/v2"
@@ -19,12 +20,13 @@ func NewCategoryController(categoryService *service.CategoryService) *CategoryCo
 }
 
 func (c *CategoryController) Route(app *fiber.App) {
-	route := app.Group("categories")
-	route.Get("/", c.findAll)
-	route.Get("/:id", c.findByID)
-	route.Post("/", c.create)
-	route.Put("/:id", c.updateByID)
-	route.Delete("/:id", c.deleteByID)
+	route := app.Group("/categories")
+
+	route.Get("/", middleware.Protected(), c.findAll)
+	route.Get("/:id", middleware.Protected(), c.findByID)
+	route.Post("/", middleware.Protected(), c.create)
+	route.Put("/:id", middleware.Protected(), c.updateByID)
+	route.Delete("/:id", middleware.Protected(), c.deleteByID)
 }
 
 func (c *CategoryController) findAll(ctx *fiber.Ctx) error {
