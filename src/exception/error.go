@@ -11,3 +11,12 @@ var EntityNotFound = func(entity string) error {
 	err.Message = message
 	return err
 }
+
+var Unauthorized = func(message string) error {
+	if message == "" {
+		message = helper.MsgPasscodeNotMatch
+	}
+	err := fiber.ErrUnauthorized
+	err.Message = message
+	return err
+}

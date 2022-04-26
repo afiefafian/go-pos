@@ -25,13 +25,12 @@ func FiberErrorHandler(ctx *fiber.Ctx, err error) error {
 	if e, ok := err.(*fiber.Error); ok {
 		newErr.Code = e.Code
 		newErr.Message = e.Error()
-	}
-
-	if e, ok := err.(error); ok {
+	} else if e, ok := err.(error); ok {
 		newErr = fiber.ErrBadRequest
 		newErr.Message = e.Error()
 	}
 
+	// Handle validation error
 	if e, ok := err.(validator.ValidationErrors); ok {
 		errDetail := helper.FormatValidationError(e)
 

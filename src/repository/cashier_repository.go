@@ -64,7 +64,7 @@ func (r *CashierRepository) Count() (int, error) {
 
 func (r *CashierRepository) GetByID(id int64) (*entity.Cashier, error) {
 	var cashier entity.Cashier
-	row := r.db.QueryRow("SELECT * FROM cashiers WHERE id = ?", id)
+	row := r.db.QueryRow("SELECT id, name, passcode, created_at, updated_at FROM cashiers WHERE id = ?", id)
 	err := row.Scan(
 		&cashier.ID,
 		&cashier.Name,

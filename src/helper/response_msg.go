@@ -8,6 +8,7 @@ import (
 
 const MsgSuccess = "Success"
 const MsgErrValidation = "Validation Error"
+const MsgPasscodeNotMatch = "Passcode Not Match"
 
 func MsgErrEntityNotFound(entity string) string {
 	return fmt.Sprintf("%s Not Found", entity)

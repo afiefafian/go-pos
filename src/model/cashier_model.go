@@ -27,10 +27,12 @@ type CreateCashierResponse struct {
 }
 
 type CashierLoginRequest struct {
+	ID       int64
 	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
 }
 
 type CashierLogoutRequest CashierLoginRequest
+type CashierPasscodeRespose CashierLoginRequest
 
 type CashierLoginResponse struct {
 	Token string `json:"token"`

@@ -35,7 +35,7 @@ func (c *CashierController) Route(app *fiber.App) {
 	route.Delete("/:id", c.deleteByID)
 	route.Get("/:id/passcode", c.getPasscode)
 	route.Post("/:id/login", c.login)
-	route.Get("/:id/logout", c.logout)
+	route.Post("/:id/logout", c.logout)
 }
 
 func (c *CashierController) findAll(ctx *fiber.Ctx) error {
@@ -116,13 +116,59 @@ func (c *CashierController) deleteByID(ctx *fiber.Ctx) error {
 }
 
 func (c *CashierController) getPasscode(ctx *fiber.Ctx) error {
-	return nil
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Cashier"))
+	}
+
+	var response *model.CashierPasscodeRespose
+	response, err = c.cashierAuthService.GetPasscode(id)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, response, "")
 }
 
 func (c *CashierController) login(ctx *fiber.Ctx) error {
-	return nil
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Cashier"))
+	}
+
+	var request model.CashierLoginRequest
+	if err := ctx.BodyParser(&request); err != nil {
+		panic(err)
+	}
+
+	request.ID = id
+
+	var response *model.CashierLoginResponse
+	response, err = c.cashierAuthService.Authenticate(request)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, response, "")
 }
 
 func (c *CashierController) logout(ctx *fiber.Ctx) error {
-	return nil
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Cashier"))
+	}
+
+	var request model.CashierLogoutRequest
+	if err := ctx.BodyParser(&request); err != nil {
+		panic(err)
+	}
+
+	request.ID = id
+
+	err = c.cashierAuthService.Logout(request)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, nil, "")
 }
