@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/afiefafian/go-pos/src/exception"
@@ -96,8 +95,6 @@ func (c *CashierController) updateByID(ctx *fiber.Ctx) error {
 
 	err = c.cashierService.UpdateByID(request)
 	if err != nil {
-		fmt.Println("gagal update kasir")
-		fmt.Println(err)
 		panic(err)
 	}
 

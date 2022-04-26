@@ -7,15 +7,15 @@ import (
 
 var EntityNotFound = func(entity string) error {
 	message := helper.MsgErrEntityNotFound(entity)
-	err := fiber.ErrNotFound
+	err := *fiber.ErrNotFound
 	err.Message = message
-	return err
+	return &err
 }
 
 var Unauthorized = func(message string) error {
-	err := fiber.ErrUnauthorized
+	err := *fiber.ErrUnauthorized
 	if message != "" {
 		err.Message = message
 	}
-	return err
+	return &err
 }

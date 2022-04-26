@@ -25,6 +25,7 @@ func (s *CashierAuthService) GetPasscode(id int64) (*model.CashierPasscodeRespos
 		return nil, err
 	}
 	return &model.CashierPasscodeRespose{
+		ID:       id,
 		Passcode: cashier.Passcode,
 	}, nil
 }
