@@ -24,13 +24,13 @@ func (r *ProductRepository) FindAll(params model.GetProductQuery) ([]entity.Prod
 	var where []string
 
 	if params.CategoryId != nil {
-		values = append(values, params.CategoryId)
+		values = append(values, *params.CategoryId)
 		where = append(where, fmt.Sprintf("%s = ?", "p.category_id"))
 	}
 
 	if params.Q != nil {
-		values = append(values, params.Q)
-		where = append(where, fmt.Sprintf("%s LIKE %s", "p.name", "'?%'"))
+		values = append(values, fmt.Sprintf("%s%%", *params.Q))
+		where = append(where, fmt.Sprintf("%s LIKE ?", "p.name"))
 	}
 
 	values = append(values, params.Pagination.Limit)
@@ -42,18 +42,15 @@ func (r *ProductRepository) FindAll(params model.GetProductQuery) ([]entity.Prod
 			p.discount_id, d.qty AS discount_qty, d.result AS discount_result, d.type AS discount_type, d.expired_at AS discount_exp_at 
 		FROM products p 
 		LEFT JOIN categories c ON p.category_id = c.id 
-		LEFT JOIN product_discounts d ON p.discount_id = d.id
-	`
+		LEFT JOIN product_discounts d ON p.discount_id = d.id`
+
 	if len(where) > 0 {
 		query += " WHERE "
 		query += strings.Join(where, " AND ")
 	}
 	query += " LIMIT ? OFFSET ?"
 
-	rows, err := r.db.Query(
-		query,
-		values...,
-	)
+	rows, err := r.db.Query(query, values...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,16 +109,16 @@ func (r *ProductRepository) Count(params model.GetProductQuery) (int, error) {
 	var values []interface{}
 	var where []string
 
-	query := "SELECT COUNT(*) FROM payments"
+	query := "SELECT COUNT(*) FROM products"
 
 	if params.CategoryId != nil {
-		values = append(values, params.CategoryId)
+		values = append(values, *params.CategoryId)
 		where = append(where, fmt.Sprintf("%s = ?", "category_id"))
 	}
 
 	if params.Q != nil {
-		values = append(values, params.Q)
-		where = append(where, fmt.Sprintf("%s LIKE %s", "name", "'?%'"))
+		values = append(values, fmt.Sprintf("%s%%", *params.Q))
+		where = append(where, fmt.Sprintf("%s LIKE ?", "name"))
 	}
 
 	if len(where) > 0 {
