@@ -134,6 +134,7 @@ func (s *ProductService) Create(request model.CreateProductRequest) (*model.Crea
 			Type:      request.Discount.Type,
 			Qty:       request.Discount.Qty,
 			Result:    request.Discount.Result,
+			ExpiredAt: request.Discount.ExpiredAt,
 			CreatedAt: currentTime,
 			UpdatedAt: currentTime,
 		}
