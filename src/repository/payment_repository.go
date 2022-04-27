@@ -16,8 +16,8 @@ func NewPaymentRepository(db *sql.DB) *PaymentRepository {
 	return &PaymentRepository{db}
 }
 
-func (c *PaymentRepository) FindAll(params *model.PaginationQuery) ([]entity.Payment, error) {
-	rows, err := c.db.Query(
+func (r *PaymentRepository) FindAll(params *model.PaginationQuery) ([]entity.Payment, error) {
+	rows, err := r.db.Query(
 		"SELECT id, name, type, logo, created_at, updated_at FROM payments LIMIT ? OFFSET ?",
 		params.Limit,
 		params.Skip,
@@ -54,18 +54,18 @@ func (c *PaymentRepository) FindAll(params *model.PaginationQuery) ([]entity.Pay
 	return payments, nil
 }
 
-func (c *PaymentRepository) Count() (int, error) {
+func (r *PaymentRepository) Count() (int, error) {
 	var count int
-	err := c.db.QueryRow("SELECT COUNT(*) FROM cashiers").Scan(&count)
+	err := r.db.QueryRow("SELECT COUNT(*) FROM cashiers").Scan(&count)
 	if err != nil {
 		return 0, err
 	}
 	return count, nil
 }
 
-func (c *PaymentRepository) GetByID(id int64) (*entity.Payment, error) {
+func (r *PaymentRepository) GetByID(id int64) (*entity.Payment, error) {
 	var payment entity.Payment
-	row := c.db.QueryRow("SELECT id, name, type, logo, created_at, updated_at FROM payments WHERE id = ?", id)
+	row := r.db.QueryRow("SELECT id, name, type, logo, created_at, updated_at FROM payments WHERE id = ?", id)
 	err := row.Scan(
 		&payment.ID,
 		&payment.Name,
@@ -86,8 +86,8 @@ func (c *PaymentRepository) GetByID(id int64) (*entity.Payment, error) {
 	return &payment, nil
 }
 
-func (c *PaymentRepository) Create(payment entity.Payment) (int64, error) {
-	result, err := c.db.Exec(
+func (r *PaymentRepository) Create(payment entity.Payment) (int64, error) {
+	result, err := r.db.Exec(
 		"INSERT INTO payments (name, type, logo) VALUES (?, ?, ?)",
 		payment.Name,
 		payment.Type,
@@ -99,8 +99,8 @@ func (c *PaymentRepository) Create(payment entity.Payment) (int64, error) {
 	return result.LastInsertId()
 }
 
-func (c *PaymentRepository) UpdateByID(payment entity.Payment) error {
-	_, err := c.db.Exec(
+func (r *PaymentRepository) UpdateByID(payment entity.Payment) error {
+	_, err := r.db.Exec(
 		"UPDATE payments SET name = ?, type = ?, logo = ? WHERE id = ?",
 		payment.Name,
 		payment.Type,
@@ -113,8 +113,8 @@ func (c *PaymentRepository) UpdateByID(payment entity.Payment) error {
 	return nil
 }
 
-func (c *PaymentRepository) DeleteByID(id int64) error {
-	if _, err := c.db.Exec(
+func (r *PaymentRepository) DeleteByID(id int64) error {
+	if _, err := r.db.Exec(
 		"DELETE FROM payments WHERE id = ?",
 		id,
 	); err != nil {

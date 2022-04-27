@@ -2,6 +2,11 @@ package model
 
 import "time"
 
+type GetPaymentQuery struct {
+	subtotal   int64
+	pagination PaginationQuery
+}
+
 type CreatePaymentRequest struct {
 	Name string `json:"name" validate:"required,min=1,max=50"`
 	Type string `json:"type" validate:"required,min=1,max=20"`

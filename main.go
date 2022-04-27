@@ -78,17 +78,20 @@ func main() {
 	cashierRepository := repository.NewCashierRepository(mysql.DB)
 	categoryRepository := repository.NewCategoryRepository(mysql.DB)
 	paymentRepository := repository.NewPaymentRepository(mysql.DB)
+	productRepository := repository.NewProductRepositoryy(mysql.DB)
 
 	// Setup Service
 	cashierService := service.NewCashierService(cashierRepository)
 	cashierAuthService := service.NewCashierAuthService(cashierRepository)
 	categoryService := service.NewCategoryService(categoryRepository)
 	paymentService := service.NewPaymentService(paymentRepository)
+	productService := service.NewProductService(productRepository)
 
 	// Setup Controller
 	cashierController := rest.NewCashierController(cashierService, cashierAuthService)
 	categoryController := rest.NewCategoryController(categoryService)
 	paymentController := rest.NewPaymentController(paymentService)
+	productController := rest.NewProductController(productService)
 
 	// Setup Fiber
 	app := fiber.New(fiberConfig)
@@ -97,6 +100,7 @@ func main() {
 	cashierController.Route(app)
 	categoryController.Route(app)
 	paymentController.Route(app)
+	productController.Route(app)
 	// Handle not founds
 	app.Use(middleware.RouteNotFound)
 
