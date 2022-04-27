@@ -30,7 +30,19 @@ func (c *PaymentController) Route(app *fiber.App) {
 }
 
 func (c *PaymentController) findAll(ctx *fiber.Ctx) error {
-	query := helper.NewPaginationQueryFromCtx(ctx)
+	// Query Params
+	strSubtotal := ctx.Query("subtotal")
+	var subtotal int64
+	if strSubtotal != "" {
+		subtotal, _ = strconv.ParseInt(strSubtotal, 10, 64)
+	}
+
+	paginationQuery := helper.NewPaginationQueryFromCtx(ctx)
+	query := model.GetPaymentQuery{
+		Subtotal:   subtotal,
+		Pagination: *paginationQuery,
+	}
+
 	payments, pagination, err := c.paymentService.FindAll(query)
 	if err != nil {
 		panic(err)

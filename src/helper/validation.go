@@ -9,7 +9,6 @@ var validate = validator.New()
 
 func ValidateStruct(m interface{}) error {
 	return validate.Struct(m)
-
 }
 
 func FormatValidationError(err validator.ValidationErrors) []*model.ValidationError {

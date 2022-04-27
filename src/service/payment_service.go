@@ -1,6 +1,7 @@
 package service
 
 import (
+	"math"
 	"time"
 
 	"github.com/afiefafian/go-pos/src/entity"
@@ -17,9 +18,9 @@ func NewPaymentService(paymentRepository *repository.PaymentRepository) *Payment
 	return &PaymentService{PaymentRepository: paymentRepository}
 }
 
-func (s *PaymentService) FindAll(params *model.PaginationQuery) ([]model.GetPaymentResponse, *model.PaginationResponse, error) {
+func (s *PaymentService) FindAll(params model.GetPaymentQuery) ([]model.GetPaymentResponse, *model.PaginationResponse, error) {
 	// Get data
-	payments, err := s.PaymentRepository.FindAll(params)
+	payments, err := s.PaymentRepository.FindAll(&params.Pagination)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -33,19 +34,28 @@ func (s *PaymentService) FindAll(params *model.PaginationQuery) ([]model.GetPaym
 
 	// Format data
 	var paymentsResponse = make([]model.GetPaymentResponse, 0)
-	for _, payment := range payments {
-		paymentsResponse = append(paymentsResponse, model.GetPaymentResponse{
-			ID:   payment.ID,
-			Name: payment.Name,
-			Type: payment.Type,
-			Logo: payment.Logo,
-		})
+	for _, row := range payments {
+		payment := model.GetPaymentResponse{
+			ID:   row.ID,
+			Name: row.Name,
+			Type: row.Type,
+			Logo: row.Logo,
+		}
+
+		if payment.Type == "CASH" && params.Subtotal > 0 {
+			payment.Card = append(payment.Card, params.Subtotal)
+			// Round subtotal to nearest 10k
+			roundedSubtotal := math.Ceil(float64(params.Subtotal)/10000) * 10000
+			payment.Card = append(payment.Card, int64(roundedSubtotal))
+		}
+
+		paymentsResponse = append(paymentsResponse, payment)
 	}
 
 	pagination := &model.PaginationResponse{
 		Total: count,
-		Skip:  params.Skip,
-		Limit: params.Limit,
+		Skip:  params.Pagination.Skip,
+		Limit: params.Pagination.Limit,
 	}
 
 	return paymentsResponse, pagination, nil

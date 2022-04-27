@@ -3,8 +3,8 @@ package model
 import "time"
 
 type GetPaymentQuery struct {
-	subtotal   int64
-	pagination PaginationQuery
+	Subtotal   int64
+	Pagination PaginationQuery
 }
 
 type CreatePaymentRequest struct {
@@ -30,8 +30,9 @@ type CreatePaymentResponse struct {
 }
 
 type GetPaymentResponse struct {
-	ID   int64  `json:"paymentId"`
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Logo string `json:"logo"`
+	ID   int64   `json:"paymentId"`
+	Name string  `json:"name"`
+	Type string  `json:"type"`
+	Logo string  `json:"logo"`
+	Card []int64 `json:"card,omitempty"`
 }

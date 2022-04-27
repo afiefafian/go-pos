@@ -14,6 +14,7 @@ type Order struct {
 	TotalPaid     int64
 	TotalReturn   int64
 	ReceiptID     string
+	IsDownloaded  bool
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }

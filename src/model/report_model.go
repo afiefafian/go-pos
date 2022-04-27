@@ -12,3 +12,10 @@ type PaymentReportResponse struct {
 	Logo        string `json:"logo"`
 	TotalAmount int64  `json:"totalAmount"`
 }
+
+type GetOrderedProductReportResponse struct {
+	ID          int64  `json:"productId"`
+	Name        string `json:"name"`
+	TotalQty    int64  `json:"totalQty"`
+	TotalAmount int64  `json:"totalAmount"`
+}

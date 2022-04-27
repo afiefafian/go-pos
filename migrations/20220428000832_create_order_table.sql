@@ -8,6 +8,7 @@ CREATE TABLE orders (
     total_paid bigint NOT NULL,
     total_return bigint NOT NULL,
     receipt_id varchar(50) NOT NULL,
+    is_downloaded boolean NOT NULL DEFAULT false,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(id)

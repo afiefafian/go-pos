@@ -41,7 +41,6 @@ func (d *ProductDiscount) StringFormat() string {
 	case "PERCENT":
 		p := message.NewPrinter(language.Indonesian)
 		formatResult := p.Sprintf("%d", 1000)
-
 		return fmt.Sprintf("Discount %d%% only Rp. %s", d.Qty, formatResult)
 	default:
 		return ""
