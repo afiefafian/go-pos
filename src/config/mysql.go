@@ -26,12 +26,13 @@ func config(cfg *Config) *mysql.Config {
 	)
 
 	return &mysql.Config{
-		User:      cfg.Getenv("MYSQL_USER", ""),
-		Passwd:    cfg.Getenv("MYSQL_PASSWORD", ""),
-		Net:       "tcp",
-		Addr:      addr,
-		DBName:    cfg.Getenv("MYSQL_DBNAME", ""),
-		ParseTime: true,
+		User:                 cfg.Getenv("MYSQL_USER", ""),
+		Passwd:               cfg.Getenv("MYSQL_PASSWORD", ""),
+		Net:                  "tcp",
+		Addr:                 addr,
+		DBName:               cfg.Getenv("MYSQL_DBNAME", ""),
+		ParseTime:            true,
+		AllowNativePasswords: true,
 	}
 }
 
