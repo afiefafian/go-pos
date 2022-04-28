@@ -154,7 +154,7 @@ func (s *OrderService) CreateOrder(request model.CreateOrderRequest) (*model.Cre
 	order := entity.Order{
 		CashierID:     request.CashierID,
 		PaymentTypeID: request.PaymentID,
-		TotalPrice:    0,
+		TotalPrice:    subtotalRes.Subtotal,
 		TotalPaid:     request.TotalPaid,
 		TotalReturn:   0,
 		ReceiptID:     "",
@@ -162,7 +162,6 @@ func (s *OrderService) CreateOrder(request model.CreateOrderRequest) (*model.Cre
 	}
 	// Generate Receipt ID
 	order.ReceiptID = order.GenerateReceiptID()
-	order.TotalPrice = subtotalRes.Subtotal
 	order.TotalReturn = order.TotalPaid - subtotalRes.Subtotal
 
 	// Collect required order products data
@@ -200,7 +199,7 @@ func (s *OrderService) CreateOrder(request model.CreateOrderRequest) (*model.Cre
 		ID:            orderID,
 		CashierID:     request.CashierID,
 		PaymentTypeID: request.PaymentID,
-		TotalPrice:    order.TotalPaid,
+		TotalPrice:    order.TotalPrice,
 		TotalPaid:     request.TotalPaid,
 		TotalReturn:   order.TotalReturn,
 		ReceiptID:     order.ReceiptID,

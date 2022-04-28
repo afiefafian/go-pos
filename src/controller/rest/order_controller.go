@@ -46,6 +46,7 @@ func (c *OrderController) create(ctx *fiber.Ctx) error {
 	if strCashierID == "" {
 		return exception.Unauthorized("")
 	}
+
 	cashierID, err := strconv.ParseInt(strCashierID, 10, 64)
 	if err != nil {
 		panic(err)
