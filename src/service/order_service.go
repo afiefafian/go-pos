@@ -78,17 +78,7 @@ func (s *OrderService) CheckSubTotal(request model.CreateSubTotalRequest) (*mode
 						totalFinalPrice = product.Discount.Result
 					}
 				case "PERCENT":
-					var normalPriceQty int32
-					var discountedQty int32
-					if qty >= product.Discount.Qty {
-						normalPriceQty = qty - product.Discount.Qty
-						discountedQty = product.Discount.Qty
-					} else if qty < product.Discount.Qty {
-						normalPriceQty = 0
-						discountedQty = qty
-					}
-
-					totalFinalPrice = (int64(normalPriceQty) * product.Price) + (int64(discountedQty) * product.Discount.Result)
+					totalFinalPrice = int64(qty) * finalPrice
 				}
 			}
 		}

@@ -15,9 +15,9 @@ type CreatePaymentRequest struct {
 
 type UpdatePaymentRequest struct {
 	ID   int64
-	Name string `json:"name" validate:"required,min=1,max=50"`
-	Type string `json:"type" validate:"required,min=1,max=20"`
-	Logo string `json:"logo"`
+	Name string `json:"name" validate:"required_without_all=Type Logo,max=50"`
+	Type string `json:"type" validate:"required_without_all=Name Logo,max=20"`
+	Logo string `json:"logo" validate:"required_without_all=Name Type"`
 }
 
 type CreatePaymentResponse struct {

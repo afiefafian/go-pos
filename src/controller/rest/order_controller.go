@@ -17,8 +17,8 @@ func NewOrderController(orderService *service.OrderService) *OrderController {
 }
 
 func (c *OrderController) Route(app *fiber.App) {
-	app.Get("orders", c.findAll)
-	app.Post("orders/subtotal", c.createSubTotal)
+	app.Get("orders", middleware.Protected(), c.findAll)
+	app.Post("orders/subtotal", middleware.Protected(), c.createSubTotal)
 	app.Get("orders/:id", c.findByID)
 	app.Post("orders", c.create)
 	app.Get("orders/:id/download", c.getOrderPdf)

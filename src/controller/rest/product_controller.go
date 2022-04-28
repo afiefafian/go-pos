@@ -23,9 +23,9 @@ func NewProductController(productService *service.ProductService) *ProductContro
 func (c *ProductController) Route(app *fiber.App) {
 	route := app.Group("/products")
 
-	route.Get("/", c.findAll)
-	route.Get("/:id", middleware.Protected(), c.findByID)
+	route.Get("/", middleware.Protected(), c.findAll)
 	route.Post("/", c.create)
+	route.Get("/:id", middleware.Protected(), c.findByID)
 	route.Put("/:id", c.updateByID)
 	route.Delete("/:id", c.deleteByID)
 }

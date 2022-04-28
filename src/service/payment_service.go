@@ -44,8 +44,15 @@ func (s *PaymentService) FindAll(params model.GetPaymentQuery) ([]model.GetPayme
 
 		if payment.Type == "CASH" && params.Subtotal > 0 {
 			payment.Card = append(payment.Card, params.Subtotal)
+
+			// Add +1 if modulus result is 0
+			subtotalSuggestion := params.Subtotal
+			if subtotalSuggestion%10000 == 0 {
+				subtotalSuggestion = subtotalSuggestion + 1
+			}
+
 			// Round subtotal to nearest 10k
-			roundedSubtotal := math.Ceil(float64(params.Subtotal)/10000) * 10000
+			roundedSubtotal := math.Ceil(float64(subtotalSuggestion)/10000) * 10000
 			payment.Card = append(payment.Card, int64(roundedSubtotal))
 		}
 
@@ -104,7 +111,8 @@ func (s *PaymentService) Create(request model.CreatePaymentRequest) (*model.Crea
 }
 
 func (s *PaymentService) UpdateByID(request model.UpdatePaymentRequest) error {
-	if _, err := s.PaymentRepository.GetByID(request.ID); err != nil {
+	existingPayment, err := s.PaymentRepository.GetByID(request.ID)
+	if err != nil {
 		return err
 	}
 
@@ -117,6 +125,17 @@ func (s *PaymentService) UpdateByID(request model.UpdatePaymentRequest) error {
 		Name: request.Name,
 		Type: request.Type,
 		Logo: request.Logo,
+	}
+
+	// Set default value
+	if request.Name == "" {
+		payment.Name = existingPayment.Name
+	}
+	if request.Type == "" {
+		payment.Type = existingPayment.Type
+	}
+	if request.Logo == "" {
+		payment.Logo = existingPayment.Logo
 	}
 
 	if err := s.PaymentRepository.UpdateByID(payment); err != nil {

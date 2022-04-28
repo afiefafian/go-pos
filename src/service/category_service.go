@@ -94,6 +94,11 @@ func (s *CategoryService) UpdateByID(request model.UpdateCategoryRequest) error 
 		return err
 	}
 
+	// Bypass update if value nil
+	if request.Name == "" {
+		return nil
+	}
+
 	category := entity.Category{
 		ID:   request.ID,
 		Name: request.Name,

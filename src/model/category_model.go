@@ -8,7 +8,7 @@ type CreateCategoryRequest struct {
 
 type UpdateCategoryRequest struct {
 	ID   int64
-	Name string `json:"name" validate:"required,min=1,max=50"`
+	Name string `json:"name" validate:"required,max=50"`
 }
 
 type CreateCategoryResponse struct {

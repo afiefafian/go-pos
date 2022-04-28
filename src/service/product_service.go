@@ -160,7 +160,8 @@ func (s *ProductService) Create(request model.CreateProductRequest) (*model.Crea
 }
 
 func (s *ProductService) UpdateByID(request model.UpdateProductRequest) error {
-	if _, err := s.ProductRepository.GetByID(request.ID); err != nil {
+	existingProduct, err := s.ProductRepository.GetByID(request.ID)
+	if err != nil {
 		return err
 	}
 
@@ -177,6 +178,23 @@ func (s *ProductService) UpdateByID(request model.UpdateProductRequest) error {
 		Category: &entity.Category{
 			ID: request.CategoryID,
 		},
+	}
+
+	// Set default value
+	if request.Name == "" {
+		product.Name = existingProduct.Name
+	}
+	if request.Image == "" {
+		product.Image = existingProduct.Image
+	}
+	if request.Stock == 0 {
+		product.Stock = existingProduct.Stock
+	}
+	if request.Price == 0 {
+		product.Price = existingProduct.Price
+	}
+	if request.CategoryID == 0 && existingProduct.Category != nil {
+		product.Category.ID = existingProduct.Category.ID
 	}
 
 	if err := s.ProductRepository.UpdateByID(product); err != nil {

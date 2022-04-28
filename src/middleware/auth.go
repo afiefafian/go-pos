@@ -10,6 +10,7 @@ import (
 // Protected protect routes
 func Protected() fiber.Handler {
 	return jwtware.New(jwtware.Config{
+		AuthScheme:   "JWT",
 		SigningKey:   []byte(config.SECRET),
 		ErrorHandler: jwtError,
 	})

@@ -26,11 +26,11 @@ type CreateProductDiscountRequest struct {
 
 type UpdateProductRequest struct {
 	ID         int64
-	CategoryID int64  `json:"categoryId" validate:"required"`
-	Name       string `json:"name" validate:"required,min=1"`
-	Image      string `json:"image" validate:"required,min=1"`
-	Stock      int32  `json:"stock" validate:"required"`
-	Price      int64  `json:"price" validate:"required"`
+	CategoryID int64  `json:"categoryId" validate:"required_without_all=Price Stock Image Name"`
+	Name       string `json:"name" validate:"required_without_all=Price Stock Image CategoryID"`
+	Image      string `json:"image" validate:"required_without_all=Price Stock Name CategoryID"`
+	Stock      int32  `json:"stock" validate:"required_without_all=Price Image Name CategoryID"`
+	Price      int64  `json:"price" validate:"required_without_all=Stock Image Name CategoryID"`
 }
 
 type GetProductResponse struct {
