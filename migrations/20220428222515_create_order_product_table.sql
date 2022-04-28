@@ -4,7 +4,7 @@ CREATE TABLE order_products (
     id int NOT NULL AUTO_INCREMENT,
     order_id int NOT NULL,
     product_id int NOT NULL,
-    discount_id bigint NOT NULL,
+    discount_id bigint NULL,
     qty int NOT NULL,
     price bigint NOT NULL,
     total_normal_price bigint NOT NULL,

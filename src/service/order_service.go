@@ -112,6 +112,18 @@ func (s *OrderService) CreateOrder(request model.CreateOrderRequest) (*model.Cre
 		return nil, err
 	}
 
+	// Get product info from sub total
+	subtotalRes, err := s.CheckSubTotal(model.CreateSubTotalRequest{
+		Products: request.Products,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if request.TotalPaid < subtotalRes.Subtotal {
+		return nil, errors.New("Total paid amount is smaller than total price")
+	}
+
 	// Collect required order data
 	order := entity.Order{
 		CashierID:     request.CashierID,
@@ -124,19 +136,6 @@ func (s *OrderService) CreateOrder(request model.CreateOrderRequest) (*model.Cre
 	}
 	// Generate Receipt ID
 	order.ReceiptID = order.GenerateReceiptID()
-
-	// Get product info from sub total
-	subtotalRes, err := s.CheckSubTotal(model.CreateSubTotalRequest{
-		Products: request.Products,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if order.TotalPaid < subtotalRes.Subtotal {
-		return nil, errors.New("Total paid amount is smaller than total price")
-	}
-
 	order.TotalPrice = subtotalRes.Subtotal
 	order.TotalReturn = order.TotalPaid - subtotalRes.Subtotal
 
@@ -164,11 +163,15 @@ func (s *OrderService) CreateOrder(request model.CreateOrderRequest) (*model.Cre
 	}
 
 	// Store to database
+	orderID, err := s.OrderRepository.Create(&order, orderProducts)
+	if err != nil {
+		return nil, err
+	}
 
 	// Response
 	currentTime := time.Now()
 	orderResponse := model.GetOrderResponse{
-		ID:            0,
+		ID:            orderID,
 		CashierID:     request.CashierID,
 		PaymentTypeID: request.PaymentID,
 		TotalPrice:    order.TotalPaid,
