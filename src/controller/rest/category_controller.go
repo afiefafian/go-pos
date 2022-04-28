@@ -22,7 +22,7 @@ func NewCategoryController(categoryService *service.CategoryService) *CategoryCo
 func (c *CategoryController) Route(app *fiber.App) {
 	route := app.Group("/categories")
 
-	route.Get("/", middleware.Protected(), c.findAll)
+	route.Get("/", c.findAll)
 	route.Get("/:id", middleware.Protected(), c.findByID)
 	route.Post("/", c.create)
 	route.Put("/:id", c.updateByID)

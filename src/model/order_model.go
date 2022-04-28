@@ -3,7 +3,7 @@ package model
 import "time"
 
 type CreateSubTotalRequest struct {
-	Products []CreateOrderProductRequest `json:"products" validate:"dive"`
+	Products []CreateOrderProductRequest `json:"products" validate:"min=1,dive,required"`
 }
 
 type CreateOrderProductRequest struct {
@@ -58,5 +58,5 @@ type GetOrderPaymentResponse struct {
 }
 
 type CheckOrderDownloadResponse struct {
-	IsDownload int64 `json:"isDownload"`
+	IsDownload bool `json:"isDownload"`
 }
