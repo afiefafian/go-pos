@@ -139,10 +139,7 @@ func (r *OrderRepository) Create(order *entity.Order, products []entity.OrderPro
 }
 
 func (r *OrderRepository) ChangeDownloadStatusByID(id int64) error {
-	if _, err := r.db.Exec(
-		"UPDATE orders SET is_downloaded = TRUE WHERE id = ?",
-		id,
-	); err != nil {
+	if _, err := r.db.Exec("UPDATE orders SET is_downloaded = TRUE WHERE id = ?", id); err != nil {
 		return err
 	}
 	return nil

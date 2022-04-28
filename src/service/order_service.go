@@ -26,6 +26,32 @@ func NewOrderService(
 	}
 }
 
+// func (s *OrderService) GetByID(id int64) (*model.GetOrderPaymentResponse, error) {
+// 	order, err := s.OrderRepository.GetByID(id)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// }
+
+func (s *OrderService) IsInvoiceDownloaded(id int64) (bool, error) {
+	order, err := s.OrderRepository.GetByID(id)
+	if err != nil {
+		return false, err
+	}
+	return order.IsDownloaded, nil
+}
+
+func (s *OrderService) ChangeInvoiceDownloadStatus(id int64) error {
+	status, err := s.IsInvoiceDownloaded(id)
+	if err != nil {
+		return err
+	}
+	if status {
+		return nil
+	}
+	return s.OrderRepository.ChangeDownloadStatusByID(id)
+}
+
 func (s *OrderService) CheckSubTotal(request model.CreateSubTotalRequest) (*model.CreateSubTotalResponse, error) {
 	if err := helper.ValidateStruct(request); err != nil {
 		return nil, err

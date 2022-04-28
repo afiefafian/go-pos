@@ -20,11 +20,11 @@ func NewOrderController(orderService *service.OrderService) *OrderController {
 }
 
 func (c *OrderController) Route(app *fiber.App) {
-	app.Get("orders", middleware.Protected(), c.findAll)
+	app.Get("orders", c.findAll)
 	app.Post("orders/subtotal", middleware.Protected(), c.createSubTotal)
-	app.Get("orders/:id", c.findByID)
+	app.Get("orders/:id", middleware.Protected(), c.findByID)
 	app.Post("orders", middleware.Protected(), c.create)
-	app.Get("orders/:id/download", c.getOrderPdf)
+	app.Get("orders/:id/download", middleware.Protected(), c.getOrderPdf)
 	app.Get("orders/:id/check-download", middleware.Protected(), c.checkDLOrderPdf)
 }
 
@@ -78,12 +78,28 @@ func (c *OrderController) createSubTotal(ctx *fiber.Ctx) error {
 }
 
 func (c *OrderController) getOrderPdf(ctx *fiber.Ctx) error {
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Order"))
+	}
+
+	err = c.orderService.ChangeInvoiceDownloadStatus(id)
+	if err != nil {
+		panic(err)
+	}
+
 	return nil
 }
 
 func (c *OrderController) checkDLOrderPdf(ctx *fiber.Ctx) error {
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Order"))
+	}
+
+	isDownloaded, err := c.orderService.IsInvoiceDownloaded(id)
 	response := model.CheckOrderDownloadResponse{
-		IsDownload: true,
+		IsDownload: isDownloaded,
 	}
 	return helper.JsonOK(ctx, response, "")
 }
