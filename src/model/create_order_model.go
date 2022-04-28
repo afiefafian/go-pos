@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 type CreateSubTotalRequest struct {
 	Products []CreateOrderProductRequest `json:"products" validate:"min=1,dive,required"`
 }
@@ -32,31 +30,8 @@ type CreateOrderProductResponse struct {
 	TotalFinalPrice  int64                    `json:"totalFinalPrice"`
 	Discount         *ProductDiscountResponse `json:"discount"`
 }
+
 type CreateOrderResponse struct {
-	Order    GetOrderResponse            `json:"order"`
-	Products []CreateOrderProductRequest `json:"products" validate:"required"`
-}
-
-type GetOrderResponse struct {
-	ID            int64                    `json:"orderId"`
-	CashierID     int64                    `json:"cashiersId"`
-	PaymentTypeID int64                    `json:"paymentTypesId"`
-	TotalPrice    int64                    `json:"totalPrice"`
-	TotalPaid     int64                    `json:"totalPaid"`
-	TotalReturn   int64                    `json:"totalReturn"`
-	ReceiptID     string                   `json:"receiptId"`
-	CreatedAt     time.Time                `json:"createdAt"`
-	Cashier       *GetCashierResponse      `json:"cashier"`
-	PaymentType   *GetOrderPaymentResponse `json:"payment_type"`
-}
-
-type GetOrderPaymentResponse struct {
-	ID   int64  `json:"paymentTypeId"`
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Logo string `json:"logo"`
-}
-
-type CheckOrderDownloadResponse struct {
-	IsDownload bool `json:"isDownload"`
+	Order    GetOrderResponse             `json:"order"`
+	Products []CreateOrderProductResponse `json:"products"`
 }

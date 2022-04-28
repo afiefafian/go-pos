@@ -20,7 +20,7 @@ func (c *OrderController) Route(app *fiber.App) {
 	app.Get("orders", middleware.Protected(), c.findAll)
 	app.Post("orders/subtotal", middleware.Protected(), c.createSubTotal)
 	app.Get("orders/:id", c.findByID)
-	app.Post("orders", c.create)
+	app.Post("orders", middleware.Protected(), c.create)
 	app.Get("orders/:id/download", c.getOrderPdf)
 	app.Get("orders/:id/check-download", middleware.Protected(), c.checkDLOrderPdf)
 }
