@@ -19,14 +19,15 @@ type Order struct {
 	UpdatedAt     time.Time
 }
 
-func (d *Order) GenerateReceiptID() string {
+func (o *Order) GenerateReceiptID() string {
 	// Generate random number
+	low := 0
 	hi := 999
-	low := 100
 	randNum := low + rand.Intn(hi-low)
 
 	// Generate random string
-	randStr := "A"
+	charset := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	randStr := string(charset[rand.Intn(len(charset))])
 
-	return fmt.Sprintf("S%d%s", randNum, randStr)
+	return fmt.Sprintf("S%03d%s", randNum, randStr)
 }

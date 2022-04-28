@@ -13,7 +13,7 @@ type UpdateCashierRequest struct {
 }
 
 type CashierLoginRequest struct {
-	ID       int64
+	ID       int64  `json:"-"`
 	Passcode string `json:"passcode" validate:"required,min=3,max=32"`
 }
 

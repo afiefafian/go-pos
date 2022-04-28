@@ -10,9 +10,10 @@ type CreateOrderProductRequest struct {
 }
 
 type CreateOrderRequest struct {
+	CashierID int64                       `json:"-" validate:"required"`
 	PaymentID int64                       `json:"paymentId" validate:"required"`
-	TotalPaid int64                       `json:"qty" validate:"required"`
-	Products  []CreateOrderProductRequest `json:"products" validate:"required"`
+	TotalPaid int64                       `json:"totalPaid" validate:"required"`
+	Products  []CreateOrderProductRequest `json:"products" validate:"required,gt=0,dive"`
 }
 
 type CreateSubTotalResponse struct {
@@ -23,7 +24,7 @@ type CreateSubTotalResponse struct {
 type CreateOrderProductResponse struct {
 	ID               int64                    `json:"productId"`
 	Name             string                   `json:"name"`
-	Stock            int32                    `json:"stock"`
+	Stock            int32                    `json:"stock,omitempty"`
 	Price            int64                    `json:"price"`
 	Qty              int32                    `json:"qty"`
 	TotalNormalPrice int64                    `json:"totalNormalPrice"`

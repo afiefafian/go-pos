@@ -11,7 +11,7 @@ type OrderProduct struct {
 	DiscountID       int64
 	Qty              int32
 	Price            int64
-	totalNormalPrice int64
+	TotalNormalPrice int64
 	TotalFinalPrice  int64
 	CreatedAt        time.Time
 	UpdatedAt        time.Time

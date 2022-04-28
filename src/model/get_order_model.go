@@ -11,6 +11,7 @@ type GetOrderResponse struct {
 	TotalReturn   int64                    `json:"totalReturn"`
 	ReceiptID     string                   `json:"receiptId"`
 	CreatedAt     time.Time                `json:"createdAt"`
+	UpdatedAt     time.Time                `json:"updatedAt,omitempty"`
 	Cashier       *GetCashierResponse      `json:"cashier,omitempty"`
 	PaymentType   *GetOrderPaymentResponse `json:"payment_type,omitempty"`
 }

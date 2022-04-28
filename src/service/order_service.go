@@ -1,6 +1,11 @@
 package service
 
 import (
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/afiefafian/go-pos/src/entity"
 	"github.com/afiefafian/go-pos/src/helper"
 	"github.com/afiefafian/go-pos/src/model"
 	"github.com/afiefafian/go-pos/src/repository"
@@ -40,6 +45,12 @@ func (s *OrderService) CheckSubTotal(request model.CreateSubTotalRequest) (*mode
 	products, err := s.ProductRepository.FindByIDS(productIDs)
 	if err != nil {
 		return nil, err
+	}
+
+	// If product from request and db is not same
+	// then return error
+	if len(products) != len(productIDs) {
+		return nil, errors.New("Invalid Product ID")
 	}
 
 	var subTotal int64 = 0
@@ -94,4 +105,97 @@ func (s *OrderService) CheckSubTotal(request model.CreateSubTotalRequest) (*mode
 	}
 
 	return response, nil
+}
+
+func (s *OrderService) CreateOrder(request model.CreateOrderRequest) (*model.CreateOrderResponse, error) {
+	if err := helper.ValidateStruct(request); err != nil {
+		return nil, err
+	}
+
+	// Collect required order data
+	order := entity.Order{
+		CashierID:     request.CashierID,
+		PaymentTypeID: request.PaymentID,
+		TotalPrice:    0,
+		TotalPaid:     request.TotalPaid,
+		TotalReturn:   0,
+		ReceiptID:     "",
+		IsDownloaded:  false,
+	}
+	// Generate Receipt ID
+	order.ReceiptID = order.GenerateReceiptID()
+
+	// Get product info from sub total
+	subtotalRes, err := s.CheckSubTotal(model.CreateSubTotalRequest{
+		Products: request.Products,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if order.TotalPaid < subtotalRes.Subtotal {
+		return nil, errors.New("Total paid amount is smaller than total price")
+	}
+
+	order.TotalPrice = subtotalRes.Subtotal
+	order.TotalReturn = order.TotalPaid - subtotalRes.Subtotal
+
+	// Collect required order products data
+	var orderProducts []entity.OrderProduct
+	for _, v := range subtotalRes.Products {
+		// Check stock qty
+		if v.Qty > v.Stock {
+			return nil, errors.New(fmt.Sprintf("Insufficient stock: Order qty total (%d) is bigger tham product stock (%d)", v.Qty, v.Stock))
+		}
+
+		product := entity.OrderProduct{
+			ProductID:        v.ID,
+			Qty:              v.Qty,
+			Price:            v.Price,
+			TotalNormalPrice: v.TotalNormalPrice,
+			TotalFinalPrice:  v.TotalFinalPrice,
+		}
+
+		if v.Discount != nil {
+			product.DiscountID = v.Discount.ID
+		}
+
+		orderProducts = append(orderProducts, product)
+	}
+
+	// Store to database
+
+	// Response
+	currentTime := time.Now()
+	orderResponse := model.GetOrderResponse{
+		ID:            0,
+		CashierID:     request.CashierID,
+		PaymentTypeID: request.PaymentID,
+		TotalPrice:    order.TotalPaid,
+		TotalPaid:     request.TotalPaid,
+		TotalReturn:   order.TotalReturn,
+		ReceiptID:     order.ReceiptID,
+		CreatedAt:     currentTime,
+		UpdatedAt:     currentTime,
+	}
+
+	productsResponse := make([]model.CreateOrderProductResponse, 0)
+	for _, v := range subtotalRes.Products {
+		product := model.CreateOrderProductResponse{
+			ID:               v.ID,
+			Name:             v.Name,
+			Price:            v.Price,
+			Discount:         v.Discount,
+			Qty:              v.Qty,
+			TotalNormalPrice: v.TotalNormalPrice,
+			TotalFinalPrice:  v.TotalFinalPrice,
+		}
+		productsResponse = append(productsResponse, product)
+	}
+
+	response := model.CreateOrderResponse{
+		Order:    orderResponse,
+		Products: productsResponse,
+	}
+	return &response, nil
 }

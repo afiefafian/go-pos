@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/afiefafian/go-pos/src/config"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -19,4 +20,10 @@ func GenerateJWToken(userID string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(config.SECRET))
+}
+
+func GetJWTUserID(c *fiber.Ctx) string {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	return claims["user_id"].(string)
 }

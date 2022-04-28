@@ -1,6 +1,9 @@
 package rest
 
 import (
+	"strconv"
+
+	"github.com/afiefafian/go-pos/src/exception"
 	"github.com/afiefafian/go-pos/src/helper"
 	"github.com/afiefafian/go-pos/src/middleware"
 	"github.com/afiefafian/go-pos/src/model"
@@ -34,7 +37,27 @@ func (c *OrderController) findByID(ctx *fiber.Ctx) error {
 }
 
 func (c *OrderController) create(ctx *fiber.Ctx) error {
-	return nil
+	var request model.CreateOrderRequest
+	if err := ctx.BodyParser(&request); err != nil {
+		panic(err)
+	}
+
+	strCashierID := helper.GetJWTUserID(ctx)
+	if strCashierID == "" {
+		return exception.Unauthorized("")
+	}
+	cashierID, err := strconv.ParseInt(strCashierID, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	request.CashierID = cashierID
+
+	response, err := c.orderService.CreateOrder(request)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, response, "")
 }
 
 func (c *OrderController) createSubTotal(ctx *fiber.Ctx) error {
