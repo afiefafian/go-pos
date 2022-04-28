@@ -18,8 +18,8 @@ type CreateOrderRequest struct {
 }
 
 type CreateSubTotalResponse struct {
-	Subtotal int64                       `json:"subtotal"`
-	Products []CreateOrderProductRequest `json:"products" validate:"required"`
+	Subtotal int64                        `json:"subtotal"`
+	Products []CreateOrderProductResponse `json:"products"`
 }
 
 type CreateOrderProductResponse struct {

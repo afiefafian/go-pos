@@ -105,6 +105,80 @@ func (r *ProductRepository) FindAll(params model.GetProductQuery) ([]entity.Prod
 	return products, nil
 }
 
+func (r *ProductRepository) FindByIDS(productIDS []int64) ([]entity.Product, error) {
+	// Convert ids from int64 to interface{}
+	ids := make([]interface{}, len(productIDS))
+	for i, v := range productIDS {
+		ids[i] = v
+	}
+
+	query := `
+		SELECT p.id, p.name, p.stock, p.price, p.image, p.created_at, p.updated_at, 
+			p.category_id, c.name AS category_name, 
+			p.discount_id, d.qty AS discount_qty, d.result AS discount_result, d.type AS discount_type, d.expired_at AS discount_exp_at 
+		FROM products p 
+		LEFT JOIN categories c ON p.category_id = c.id 
+		LEFT JOIN product_discounts d ON p.discount_id = d.id`
+
+	if len(ids) > 0 {
+		query += fmt.Sprintf(" WHERE p.id IN (?%s)", strings.Repeat(" ,?", len(ids)-1))
+	}
+
+	rows, err := r.db.Query(query, ids...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []entity.Product
+
+	for rows.Next() {
+		var product entity.Product
+		var category entity.Category
+		var discount entity.ProductDiscount
+
+		err := rows.Scan(
+			&product.ID,
+			&product.Name,
+			&product.Stock,
+			&product.Price,
+			&product.Image,
+			&product.CreatedAt,
+			&product.UpdatedAt,
+
+			&category.ID,
+			&category.Name,
+
+			&discount.ID,
+			&discount.Qty,
+			&discount.Result,
+			&discount.Type,
+			&discount.ExpiredAt,
+		)
+
+		if err != nil {
+			if !strings.Contains(err.Error(), "converting NULL") {
+				return products, err
+			}
+		}
+
+		if category.ID != 0 {
+			product.Category = &category
+		}
+		if discount.ID != 0 {
+			product.Discount = &discount
+		}
+
+		products = append(products, product)
+	}
+
+	if err = rows.Err(); err != nil {
+		return products, err
+	}
+
+	return products, nil
+}
+
 func (r *ProductRepository) Count(params model.GetProductQuery) (int, error) {
 	var values []interface{}
 	var where []string

@@ -20,3 +20,17 @@ type Product struct {
 func (p *Product) SKU() string {
 	return fmt.Sprintf("ID%03d", p.ID)
 }
+
+func (p *Product) FinalPrice() int64 {
+	if p.Discount != nil && p.Discount.IsValid() {
+		switch p.Discount.Type {
+		case "BUY_N":
+			return p.Discount.Result
+		case "PERCENT":
+			return p.Price - ((p.Price * p.Discount.Result) / 100)
+		default:
+			return p.Price
+		}
+	}
+	return p.Price
+}

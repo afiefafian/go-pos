@@ -47,3 +47,7 @@ func (d *ProductDiscount) StringFormat() string {
 	}
 
 }
+
+func (d *ProductDiscount) IsValid() bool {
+	return true
+}

@@ -46,12 +46,12 @@ func (c *OrderController) createSubTotal(ctx *fiber.Ctx) error {
 		Products: productsRequest,
 	}
 
-	_, err := c.orderService.CheckSubTotal(request)
+	response, err := c.orderService.CheckSubTotal(request)
 	if err != nil {
 		panic(err)
 	}
 
-	return helper.JsonOK(ctx, request, "")
+	return helper.JsonOK(ctx, response, "")
 }
 
 func (c *OrderController) getOrderPdf(ctx *fiber.Ctx) error {
