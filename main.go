@@ -88,6 +88,7 @@ func main() {
 	paymentService := service.NewPaymentService(paymentRepository)
 	productService := service.NewProductService(productRepository)
 	orderService := service.NewOrderService(orderRepository, productRepository)
+	reportService := service.NewReportService(paymentRepository)
 
 	// Setup Controller
 	cashierController := rest.NewCashierController(cashierService, cashierAuthService)
@@ -95,6 +96,7 @@ func main() {
 	paymentController := rest.NewPaymentController(paymentService)
 	productController := rest.NewProductController(productService)
 	orderController := rest.NewOrderController(orderService)
+	reportController := rest.NewReportController(reportService)
 
 	// Setup Fiber
 	app := fiber.New(fiberConfig)
@@ -105,6 +107,7 @@ func main() {
 	paymentController.Route(app)
 	productController.Route(app)
 	orderController.Route(app)
+	reportController.Route(app)
 	// Handle not founds
 	app.Use(middleware.RouteNotFound)
 

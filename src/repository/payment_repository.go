@@ -122,3 +122,43 @@ func (r *PaymentRepository) DeleteByID(id int64) error {
 	}
 	return nil
 }
+
+func (r *PaymentRepository) FindAllWithRevenues() ([]model.PaymentReportResponse, error) {
+	query := `
+		SELECT p.id, p.name, p.type, p.logo, COALESCE(SUM(o.total_price), 0) AS total_price
+		FROM payments p
+		LEFT JOIN orders o ON p.id = o.payment_id
+		WHERE total_price > 0 
+		GROUP BY p.id
+	`
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var payments []model.PaymentReportResponse
+
+	for rows.Next() {
+		var payment model.PaymentReportResponse
+		err := rows.Scan(
+			&payment.ID,
+			&payment.Name,
+			&payment.Type,
+			&payment.Logo,
+			&payment.TotalAmount,
+		)
+
+		if err != nil {
+			return payments, err
+		}
+
+		payments = append(payments, payment)
+	}
+
+	if err = rows.Err(); err != nil {
+		return payments, err
+	}
+
+	return payments, nil
+}

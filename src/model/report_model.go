@@ -1,8 +1,8 @@
 package model
 
 type GetRevenueReportResponse struct {
-	TotalRevenue int64  `json:"totalRevenue"`
-	PaymentTypes string `json:"paymentTypes"`
+	TotalRevenue int64                   `json:"totalRevenue"`
+	PaymentTypes []PaymentReportResponse `json:"paymentTypes"`
 }
 
 type PaymentReportResponse struct {

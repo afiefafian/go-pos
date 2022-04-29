@@ -1,23 +1,39 @@
 package rest
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/afiefafian/go-pos/src/helper"
+	"github.com/afiefafian/go-pos/src/middleware"
+	"github.com/afiefafian/go-pos/src/service"
+	"github.com/gofiber/fiber/v2"
+)
 
 type ReportController struct {
+	reportService *service.ReportService
 }
 
-func NewAuthController() *ReportController {
-	return &ReportController{}
+func NewReportController(reportService *service.ReportService) *ReportController {
+	return &ReportController{reportService}
 }
 
 func (c *ReportController) Route(app *fiber.App) {
-	app.Post("revenues", c.getRevenuesReport)
-	app.Post("solds", c.getSoldsReport)
+	app.Get("/revenues", middleware.Protected(), c.getRevenuesReport)
+	app.Get("/solds", c.GetOrderedProducts)
 }
 
 func (c *ReportController) getRevenuesReport(ctx *fiber.Ctx) error {
-	return nil
+	response, err := c.reportService.GetPaymentTypeRevenues()
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, response, "")
 }
 
-func (c *ReportController) getSoldsReport(ctx *fiber.Ctx) error {
-	return nil
+func (c *ReportController) GetOrderedProducts(ctx *fiber.Ctx) error {
+	products, err := c.reportService.GetOrderedProducts()
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, fiber.Map{"orderProducts": products}, "")
 }
