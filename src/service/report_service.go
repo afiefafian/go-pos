@@ -7,10 +7,17 @@ import (
 
 type ReportService struct {
 	PaymentRepository *repository.PaymentRepository
+	ProductRepository *repository.ProductRepository
 }
 
-func NewReportService(paymentRepository *repository.PaymentRepository) *ReportService {
-	return &ReportService{PaymentRepository: paymentRepository}
+func NewReportService(
+	paymentRepository *repository.PaymentRepository,
+	productRepository *repository.ProductRepository,
+) *ReportService {
+	return &ReportService{
+		PaymentRepository: paymentRepository,
+		ProductRepository: productRepository,
+	}
 }
 
 func (s *ReportService) GetPaymentTypeRevenues() (*model.GetRevenueReportResponse, error) {
@@ -25,13 +32,18 @@ func (s *ReportService) GetPaymentTypeRevenues() (*model.GetRevenueReportRespons
 		total += paymentType.TotalAmount
 	}
 
-	revenueResponse := &model.GetRevenueReportResponse{
+	response := &model.GetRevenueReportResponse{
 		TotalRevenue: total,
 		PaymentTypes: revenues,
 	}
-	return revenueResponse, nil
+	return response, nil
 }
 
-func (s *ReportService) GetOrderedProducts() (*model.GetOrderedProductReportResponse, error) {
-	return nil, nil
+func (s *ReportService) GetOrderedProducts() ([]model.GetOrderedProductResponse, error) {
+	products, err := s.ProductRepository.FindAllOrderedProducts()
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }

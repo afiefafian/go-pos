@@ -88,7 +88,7 @@ func main() {
 	paymentService := service.NewPaymentService(paymentRepository)
 	productService := service.NewProductService(productRepository)
 	orderService := service.NewOrderService(orderRepository, productRepository)
-	reportService := service.NewReportService(paymentRepository)
+	reportService := service.NewReportService(paymentRepository, productRepository)
 
 	// Setup Controller
 	cashierController := rest.NewCashierController(cashierService, cashierAuthService)

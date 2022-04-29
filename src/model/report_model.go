@@ -13,7 +13,7 @@ type PaymentReportResponse struct {
 	TotalAmount int64  `json:"totalAmount"`
 }
 
-type GetOrderedProductReportResponse struct {
+type GetOrderedProductResponse struct {
 	ID          int64  `json:"productId"`
 	Name        string `json:"name"`
 	TotalQty    int64  `json:"totalQty"`

@@ -42,7 +42,8 @@ func (r *ProductRepository) FindAll(params model.GetProductQuery) ([]entity.Prod
 			p.discount_id, d.qty AS discount_qty, d.result AS discount_result, d.type AS discount_type, d.expired_at AS discount_exp_at 
 		FROM products p 
 		LEFT JOIN categories c ON p.category_id = c.id 
-		LEFT JOIN product_discounts d ON p.discount_id = d.id`
+		LEFT JOIN product_discounts d ON p.discount_id = d.id
+	`
 
 	if len(where) > 0 {
 		query += " WHERE "
@@ -118,7 +119,8 @@ func (r *ProductRepository) FindByIDS(productIDS []int64) ([]entity.Product, err
 			p.discount_id, d.qty AS discount_qty, d.result AS discount_result, d.type AS discount_type, d.expired_at AS discount_exp_at 
 		FROM products p 
 		LEFT JOIN categories c ON p.category_id = c.id 
-		LEFT JOIN product_discounts d ON p.discount_id = d.id`
+		LEFT JOIN product_discounts d ON p.discount_id = d.id
+	`
 
 	if len(ids) > 0 {
 		query += fmt.Sprintf(" WHERE p.id IN (?%s)", strings.Repeat(" ,?", len(ids)-1))
@@ -352,4 +354,48 @@ func (r *ProductRepository) DeleteByID(id int64) error {
 		return err
 	}
 	return nil
+}
+
+func (r *ProductRepository) FindAllOrderedProducts() ([]model.GetOrderedProductResponse, error) {
+
+	query := `
+		SELECT p.id, p.name, COALESCE(SUM(op.qty), 0) AS total_qty, COALESCE(SUM(op.total_final_price), 0) AS total_final_price
+		FROM products p
+		LEFT JOIN order_products op ON p.id = op.product_id
+		WHERE total_final_price > 0 
+		GROUP BY p.id
+	`
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []model.GetOrderedProductResponse
+
+	for rows.Next() {
+		var product model.GetOrderedProductResponse
+
+		err := rows.Scan(
+			&product.ID,
+			&product.Name,
+			&product.TotalQty,
+			&product.TotalAmount,
+		)
+
+		if err != nil {
+			if !strings.Contains(err.Error(), "converting NULL") {
+				return products, err
+			}
+		}
+
+		products = append(products, product)
+	}
+
+	if err = rows.Err(); err != nil {
+		return products, err
+	}
+
+	return products, nil
 }
