@@ -45,6 +45,10 @@ func (r *OrderRepository) GetByID(id int64) (*entity.Order, error) {
 	return &order, nil
 }
 
+func (r *OrderRepository) GetOrderProductsByID(id int64) (*entity.Product, error) {
+	return nil, nil
+}
+
 func (r *OrderRepository) Create(order *entity.Order, products []entity.OrderProduct) (int64, error) {
 	ctx := context.Background()
 

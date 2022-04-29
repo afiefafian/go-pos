@@ -26,3 +26,5 @@ type GetOrderPaymentResponse struct {
 type CheckOrderDownloadResponse struct {
 	IsDownload bool `json:"isDownload"`
 }
+
+type GetDetailOrderResponse CreateOrderResponse

@@ -33,7 +33,18 @@ func (c *OrderController) findAll(ctx *fiber.Ctx) error {
 }
 
 func (c *OrderController) findByID(ctx *fiber.Ctx) error {
-	return nil
+	id, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		panic(exception.EntityNotFound("Order"))
+	}
+
+	var response *model.GetDetailOrderResponse
+	response, err = c.orderService.GetByID(id)
+	if err != nil {
+		panic(err)
+	}
+
+	return helper.JsonOK(ctx, response, "")
 }
 
 func (c *OrderController) create(ctx *fiber.Ctx) error {

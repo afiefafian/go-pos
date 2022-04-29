@@ -26,12 +26,30 @@ func NewOrderService(
 	}
 }
 
-// func (s *OrderService) GetByID(id int64) (*model.GetOrderPaymentResponse, error) {
-// 	order, err := s.OrderRepository.GetByID(id)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// }
+func (s *OrderService) GetByID(id int64) (*model.GetDetailOrderResponse, error) {
+	order, err := s.OrderRepository.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	orderResponse := model.GetOrderResponse{
+		ID:            order.ID,
+		CashierID:     order.CashierID,
+		PaymentTypeID: order.PaymentTypeID,
+		TotalPrice:    order.TotalPrice,
+		TotalPaid:     order.TotalPaid,
+		TotalReturn:   order.TotalReturn,
+		ReceiptID:     order.ReceiptID,
+		CreatedAt:     order.CreatedAt,
+	}
+	productsResponse := make([]model.CreateOrderProductResponse, 0)
+	response := &model.GetDetailOrderResponse{
+		Order:    orderResponse,
+		Products: productsResponse,
+	}
+
+	return response, nil
+}
 
 func (s *OrderService) IsInvoiceDownloaded(id int64) (bool, error) {
 	order, err := s.OrderRepository.GetByID(id)
