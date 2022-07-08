@@ -11,6 +11,9 @@ import (
 const defaultPaginationLimit = 10
 const defaultPaginationSkip = 0
 
+// NewPaginationQueryFromCtx return a model.PaginationQuery struct.
+// The source data of pagination is from limit and skip query string data
+// get from gofiber context and mapped to model.PaginationQuery struct.
 func NewPaginationQueryFromCtx(ctx *fiber.Ctx) *model.PaginationQuery {
 	var (
 		limit int = defaultPaginationLimit
